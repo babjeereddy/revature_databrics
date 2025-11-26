@@ -1,0 +1,1459 @@
+ONE SQLPLUS FROM WINDOWS SEARCH
+
+CONNECT system/passwod
+
+alter usser hr identified by password account unlock;
+
+A window function in SQL performs a calculation across a set of table rows 
+that are related to the current row (called a "window"),
+
+but unlike traditional aggregate functions, it does not collapse the rows into a 
+single result. Instead, it produces a result for each original row in the result set
+
+//ROW_NUMBER
+SELECT ROW_NUMBER() OVER(ORDER BY EMPLOYEE_ID ) ROW_NUBER,
+    EMPLOYEE_ID,
+    FIRST_NAME,
+    LAST_NAME,
+    SALARY
+FROM EMPLOYEES;
+
+//RANK FUNCTION`
+SELECT EMPLOYEE_ID,
+       FIRST_NAME,
+       LAST_NAME,
+       SALARY,
+       RANK() OVER(ORDER BY SALARY DESC) AS SAL_RANK 
+FROM EMPLOYEES;
+
+//PARTITION BY Used to divide rows into groups before applying an analytic function.
+
+SELECT EMPLOYEE_ID,
+       FIRST_NAME,
+       LAST_NAME,
+       DEPARTMENT_ID,
+       SALARY,
+       RANK() OVER(PARTITION BY  DEPARTMENT_ID ORDER BY SALARY DESC) AS SAL_RANK 
+FROM EMPLOYEES;
+
+//DENSE_RANK
+
+SELECT EMPLOYEE_ID,
+       FIRST_NAME,
+       LAST_NAME,
+       DEPARTMENT_ID,
+       SALARY,
+       DENSE_RANK() OVER( ORDER BY SALARY DESC) AS SAL_DENSE_RANK 
+FROM EMPLOYEES;
+
+SELECT EMPLOYEE_ID,
+       FIRST_NAME,
+       LAST_NAME,
+       DEPARTMENT_ID,
+       SALARY,
+       DENSE_RANK() OVER(PARTITION BY  DEPARTMENT_ID ORDER BY SALARY DESC) AS SAL_DENSE_RANK 
+FROM EMPLOYEES;
+
+// PERCENT_RANK FUNCTION
+//PERCENT_RANK = (rank - 1) / (total_rows_in_partition - 1)
+
+ SELECT EMPLOYEE_ID,
+       FIRST_NAME,
+       LAST_NAME,
+       DEPARTMENT_ID,
+       SALARY,
+       PERCENT_RANK() OVER( ORDER BY SALARY) AS PERCENT_RANK 
+FROM EMPLOYEES;
+
+SELECT (2-1)/107 FROM DUAL;
+
+ SELECT EMPLOYEE_ID,
+       FIRST_NAME,
+       LAST_NAME,
+       DEPARTMENT_ID,
+       SALARY,
+       PERCENT_RANK() OVER( PARTITION BY DEPARTMENT_ID ORDER BY SALARY) AS PERCENT_RANK 
+FROM EMPLOYEES;
+
+   
+// LAG FUNCTION
+
+ SELECT EMPLOYEE_ID,
+       FIRST_NAME,
+       LAST_NAME,
+       DEPARTMENT_ID,
+       SALARY,
+       LAG(SALARY) OVER( ORDER BY SALARY ) AS LAG_SAL
+FROM EMPLOYEES;
+
+SELECT EMPLOYEE_ID,
+       FIRST_NAME,
+       LAST_NAME,
+       DEPARTMENT_ID,
+       SALARY,
+       LAG(SALARY,2) OVER( ORDER BY SALARY ) AS LAG_SAL
+FROM EMPLOYEES;
+
+SELECT EMPLOYEE_ID,
+       FIRST_NAME,
+       LAST_NAME,
+       DEPARTMENT_ID,
+       SALARY,
+       LAG(SALARY) OVER(PARTITION  BY department_id ORDER BY SALARY ) AS LAG_SAL
+FROM EMPLOYEES;
+
+//LEAD
+SELECT EMPLOYEE_ID,
+       FIRST_NAME,
+       LAST_NAME,
+       DEPARTMENT_ID,
+       SALARY,
+       LEAD(SALARY) OVER( ORDER BY SALARY ) AS LEAD_SAL
+FROM EMPLOYEES;
+
+SELECT EMPLOYEE_ID,
+       FIRST_NAME,
+       LAST_NAME,
+       DEPARTMENT_ID,
+       SALARY,
+       LAG(SALARY) OVER( ORDER BY SALARY ) AS LEAD_SAL
+FROM EMPLOYEES;
+
+SELECT EMPLOYEE_ID,
+       FIRST_NAME,
+       LAST_NAME,
+       DEPARTMENT_ID,
+       SALARY,
+       LAG(SALARY) OVER(PARTITION BY DEPARTMENT_ID ORDER BY SALARY ) AS LEAD_SAL
+FROM EMPLOYEES;
+
+//FIRST_LAST
+
+SELECT EMPLOYEE_ID,
+       FIRST_NAME,
+       LAST_NAME,
+       DEPARTMENT_ID,
+       SALARY,
+       FIRST_VALUE(SALARY) OVER( ORDER BY SALARY ) AS FIRST_SAL
+FROM EMPLOYEES;
+
+//LAST_VALUE
+
+SELECT EMPLOYEE_ID,
+       FIRST_NAME,
+       LAST_NAME,
+       DEPARTMENT_ID,
+       SALARY,
+       LAST_VALUE(SALARY) OVER( ORDER BY SALARY ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING  ) AS LAST_SAL
+FROM EMPLOYEES;
+
+SELECT EMPLOYEE_ID,
+       FIRST_NAME,
+       LAST_NAME,
+       DEPARTMENT_ID,
+       SALARY,
+       SUM(SALARY) OVER( ORDER BY SALARY ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING  ) AS TOTAL_SAL
+     
+FROM EMPLOYEES;
+
+SELECT EMPLOYEE_ID,
+       FIRST_NAME,
+       LAST_NAME,
+       DEPARTMENT_ID,
+       SALARY,
+       SUM(SALARY) OVER(PARTITION BY department_id ORDER BY SALARY ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING  ) 
+       AS DEPT_TOTAL_SAL
+     
+FROM EMPLOYEES;
+
+
+SELECT EMPLOYEE_ID,
+       FIRST_NAME,
+       LAST_NAME,
+       DEPARTMENT_ID,
+       SALARY,
+       MAX(SALARY) OVER( ORDER BY SALARY ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING  ) 
+       AS MAX_SAL
+     
+FROM EMPLOYEES;
+SELECT EMPLOYEE_ID,
+       FIRST_NAME,
+       LAST_NAME,
+       DEPARTMENT_ID,
+       SALARY,
+       MAX(SALARY) OVER( PARTITION BY DEPARTMENT_ID ORDER BY SALARY ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING  ) 
+       AS DEPT_MAX_SAL
+     
+FROM EMPLOYEES;
+
+
+
+
+
+
+SELECT EMPLOYEE_ID,
+       FIRST_NAME,
+       LAST_NAME,
+       DEPARTMENT_ID,
+       SALARY,
+       SUM(SALARY) OVER( ORDER BY SALARY ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW  ) 
+       AS RUNNING_TOTAL
+     
+FROM EMPLOYEES;
+
+
+SELECT EMPLOYEE_ID,
+       FIRST_NAME,
+       LAST_NAME,
+       DEPARTMENT_ID,
+       SALARY,
+       AVG(SALARY) OVER( ORDER BY SALARY ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW  ) 
+       AS RUNNING_AVG
+     
+FROM EMPLOYEES;
+
+//Running Total of 3 Salaries (Current + Previous 2)
+
+SELECT EMPLOYEE_ID,
+       FIRST_NAME,
+       LAST_NAME,
+       SALARY,
+       SUM(SALARY) OVER (
+           ORDER BY SALARY
+           ROWS BETWEEN 2 PRECEDING AND CURRENT ROW
+       ) AS THREE_SAL_TOTAL
+FROM EMPLOYEES;
+
+
+//Common Table Expression.
+//It lets you define a temporary result set that you can use later in the same query.
+//filter employees by department (HR.EMPLOYEES)
+
+WITH EMP_DEPT_60 AS (
+SELECT EMPLOYEE_ID,
+       FIRST_NAME,
+       LAST_NAME,
+       DEPARTMENT_ID,
+       SALARY 
+FROM EMPLOYEES )
+SELECT EMPLOYEE_ID,FIRST_NAME,SALARY FROM  EMP_DEPT_60;
+
+//CTE with JOIN (EMPLOYEES + DEPARTMENTS)
+
+WITH emp_dept AS (
+    SELECT e.employee_id,
+           e.first_name,
+           e.last_name,
+           e.department_id,
+           d.department_name,
+           e.salary
+    FROM   employees e
+           JOIN departments d
+             ON e.department_id = d.department_id
+)
+SELECT *
+FROM   emp_dept
+WHERE  salary > 10000
+ORDER  BY department_name, salary DESC;
+
+//Dept-wise average salary, then filter by avg salary
+
+WITH dept_avg AS (
+    SELECT department_id,
+           AVG(salary) AS avg_salary,
+           COUNT(*)    AS emp_count
+    FROM   employees
+    GROUP  BY department_id
+)
+SELECT d.department_id,
+       d.avg_salary,
+       d.emp_count
+FROM   dept_avg d
+WHERE  d.avg_salary > 10000
+ORDER  BY d.avg_salary DESC;
+
+//Use Aggregation CTE + join back to EMPLOYEES
+WITH dept_avg AS (
+    SELECT department_id,
+           AVG(salary) AS avg_salary
+    FROM   employees
+    GROUP  BY department_id
+)
+SELECT e.employee_id,
+       e.first_name,
+       e.last_name,
+       e.department_id,
+       e.salary,
+       d.avg_salary
+FROM   employees e
+       JOIN dept_avg d
+         ON e.department_id = d.department_id
+WHERE  e.salary > d.avg_salary
+ORDER  BY e.department_id, e.salary DESC;
+
+//Multiple CTEs in one WITH clause
+
+WITH high_paid AS (
+    SELECT employee_id,
+           first_name,
+           last_name,
+           department_id,
+           salary
+    FROM   employees
+    WHERE  salary > 12000
+),
+dept_info AS (
+    SELECT department_id,
+           department_name,
+           location_id
+    FROM   departments
+)
+SELECT h.employee_id,
+       h.first_name,
+       h.last_name,
+       d.department_name,
+       h.salary
+FROM   high_paid h
+       JOIN dept_info d
+         ON h.department_id = d.department_id
+ORDER  BY h.salary DESC;
+
+//Use CTE in SELECT and in a subquery
+
+WITH emp_cte AS (
+    SELECT employee_id,
+           first_name,
+           last_name,
+           department_id,
+           salary
+    FROM   employees
+    WHERE  department_id = 90
+)
+SELECT e1.employee_id,
+       e1.first_name,
+       e1.salary,
+       (SELECT AVG(e2.salary)
+        FROM   emp_cte e2) AS dept_avg_salary
+FROM   emp_cte e1
+ORDER  BY e1.salary DESC;
+
+//Rank employees by salary within department
+WITH emp_rank AS (
+    SELECT employee_id,
+           first_name,
+           last_name,
+           department_id,
+           salary,
+           RANK() OVER (
+               PARTITION BY department_id
+               ORDER BY salary DESC
+           ) AS sal_rank
+    FROM   employees
+)
+SELECT *
+FROM   emp_rank
+WHERE  sal_rank <= 3
+ORDER  BY department_id, sal_rank;
+
+// RECUSIVE CTE
+//Find employees reporting under manager 100 (including multiple levels).
+
+WITH emp_hierarchy (employee_id, first_name, manager_id, level_no) AS (
+    -- Anchor: Manager 100
+    SELECT employee_id, first_name, manager_id, 1
+    FROM employees
+    WHERE manager_id  IS NULL
+
+    UNION ALL
+
+    -- Recursive: employees reporting to previous result
+    SELECT e.employee_id, e.first_name, e.manager_id, level_no + 1
+    FROM employees e
+    JOIN emp_hierarchy h
+        ON e.manager_id = h.employee_id
+)
+SELECT *
+FROM emp_hierarchy
+ORDER BY level_no, employee_id;
+
+
+//CTE used in UPDATE
+
+WITH high_perf AS (
+    SELECT employee_id
+    FROM   employees
+    WHERE  salary < 5000
+      AND  department_id = 50
+)
+UPDATE employees
+SET    salary = salary * 1.10
+WHERE  employee_id IN (SELECT employee_id FROM high_perf);
+
+//SUBQUERY
+//Find employees who earn more than the average salary.
+SELECT employee_id,
+       first_name,
+       last_name,
+       salary
+FROM   employees
+WHERE  salary > (
+        SELECT AVG(salary)
+        FROM   employees
+       )
+ORDER BY salary DESC;
+
+//Find employees who work in departments located in the United States.
+
+SELECT employee_id,
+       first_name,
+       last_name,
+       department_id
+FROM   employees
+WHERE  department_id IN (
+        SELECT department_id
+        FROM   departments
+        WHERE  location_id IN (
+               SELECT location_id
+               FROM   locations
+               WHERE  country_id = 'US'
+        )
+      );
+      
+//Find employees whose salary is greater than ANY employee in Department 90.
+
+SELECT employee_id,
+       first_name,
+       last_name,
+       salary
+FROM   employees
+WHERE  salary > ANY (
+        SELECT salary
+        FROM   employees
+        WHERE  department_id = 90
+      );
+      
+//Find employees whose salary is greater than ALL salaries in Department 60.
+
+SELECT employee_id,
+       first_name,
+       last_name,
+       salary
+FROM   employees
+WHERE  salary > ALL (
+        SELECT salary
+        FROM   employees
+        WHERE  department_id = 60
+      );
+//Find departments that have at least one employee.
+SELECT department_id,
+       department_name
+FROM   departments d
+WHERE EXISTS (
+        SELECT 1
+        FROM   employees e
+        WHERE  e.department_id = d.department_id
+      );
+//SELECT department_id,
+       department_name
+FROM   departments d
+WHERE NOT EXISTS (
+        SELECT 1
+        FROM   employees e
+        WHERE  e.department_id = d.department_id
+      );
+//Multi-Column Subquery
+
+//Find employees whose job_id and department_id match Douglas Grant.
+
+SELECT employee_id,
+       first_name,
+       last_name,
+       job_id,
+       department_id
+FROM   employees
+WHERE (job_id, department_id) = (
+        SELECT job_id, department_id
+        FROM   employees
+        WHERE  first_name = 'Douglas'
+          AND  last_name  = 'Grant'
+      );
+      
+//Subquery in SELECT Clause (Scalar Subquery)
+
+//Display employee with their department name (without JOIN).
+
+
+SELECT employee_id,
+       first_name,
+       last_name,
+       salary,
+       (
+         SELECT department_name
+         FROM   departments d
+         WHERE  d.department_id = e.department_id
+       ) AS dept_name
+FROM   employees e;
+
+//. Correlated Subquery – Employees earning more than dept avg
+
+//Compares each employee with their own department.
+
+SELECT employee_id,
+       first_name,
+       last_name,
+       department_id,
+       salary
+FROM   employees e
+WHERE  salary > (
+        SELECT AVG(salary)
+        FROM   employees
+        WHERE  department_id = e.department_id
+      )
+ORDER BY department_id, salary DESC;
+
+//FIND THE HIGHEST PAID EMAPLOYEE IN EVERY DEPARTMENT
+
+SELECT employee_id,
+       first_name,
+       last_name,
+       department_id,
+       salary
+FROM   employees e
+WHERE  salary = (
+        SELECT MAX(salary)
+        FROM   employees
+        WHERE  department_id = e.department_id
+      )
+ORDER BY department_id;
+
+//Subquery in FROM Clause (Inline View)
+
+SELECT *
+FROM   (
+        SELECT employee_id,
+               first_name,
+               last_name,
+               salary,
+               RANK() OVER (ORDER BY salary DESC) AS rnk
+        FROM   employees
+       )
+WHERE rnk <= 3;
+
+//PERFOMANCE OPTIMIZATION 
+
+// Filtering by department_name: subquery vs join
+
+SELECT employee_id,
+       first_name,
+       last_name,
+       department_id
+FROM   employees
+WHERE  department_id = (
+         SELECT department_id
+         FROM   departments
+         WHERE  department_name = 'IT'
+       );
+//JOIN version (usually more natural & often more optimized)
+
+SELECT e.employee_id,
+       e.first_name,
+       e.last_name,
+       e.department_id,
+       d.department_name
+FROM   employees   e
+       JOIN departments d
+         ON e.department_id = d.department_id
+WHERE  d.department_name = 'IT';
+
+//Correlated subquery (bad) → join/group by (better)
+SELECT employee_id,
+       first_name,
+       last_name,
+       department_id,
+       salary
+FROM   employees e
+WHERE  salary > (
+         SELECT AVG(salary)
+         FROM   employees
+         WHERE  department_id = e.department_id
+       );
+       
+//Better: precompute in CTE / inline view + join
+
+WITH dept_avg AS (
+    SELECT department_id,
+           AVG(salary) AS avg_sal
+    FROM   employees
+    GROUP  BY department_id
+)
+SELECT e.employee_id,
+       e.first_name,
+       e.last_name,
+       e.department_id,
+       e.salary,
+       d.avg_sal
+FROM   employees e
+       JOIN dept_avg d
+         ON e.department_id = d.department_id
+WHERE  e.salary > d.avg_sal;
+
+--Why better:
+--dept_avg calculates once per department.
+--Join is a simple hash/merge/nested loops join – very optimizer friendly.
+--Easy to extend (e.g., add more filters on department).
+
+
+--EXISTS vs IN vs JOIN
+Find departments that have employees – EXISTS (semi-join)
+SELECT d.department_id,
+       d.department_name
+FROM   departments d
+WHERE  EXISTS (
+         SELECT 1
+         FROM   employees e
+         WHERE  e.department_id = d.department_id
+       );
+
+
+--Same logic as IN
+SELECT d.department_id,
+       d.department_name
+FROM   departments d
+WHERE  d.department_id IN (
+         SELECT department_id
+         FROM   employees
+       );
+--JOIN
+SELECT DISTINCT d.department_id,
+       d.department_name
+FROM   departments d
+       JOIN employees e
+         ON d.department_id = e.department_id;
+
+--EXISTS / IN often become semi-joins in Oracle, which can be more efficient than doing a join and then DISTINCT.
+--If you only need to check existence, EXISTS is usually the clearest.
+
+--Scalar subquery vs join
+--Scalar subquery in SELECT
+SELECT e.employee_id,
+       e.first_name,
+       e.last_name,
+       (
+         SELECT department_name
+         FROM   departments d
+         WHERE  d.department_id = e.department_id
+       ) AS dept_name
+FROM   employees e;
+
+
+--For each employee, Oracle must evaluate that subquery (optimizer may cache/optimize but logically N times).
+
+--Better: simple join
+SELECT e.employee_id,
+       e.first_name,
+       e.last_name,
+       d.department_name
+FROM   employees   e
+       LEFT JOIN departments d
+              ON e.department_id = d.department_id;
+
+
+--avoid scalar subqueries if you can express the logic as a JOIN.
+
+
+
+--Moving filters from outer query into subquery (predicate pushdown)
+SELECT e.employee_id,
+       e.first_name,
+       e.salary
+FROM   employees e
+WHERE  e.department_id IN (
+         SELECT department_id
+         FROM   departments
+         WHERE  location_id IN (
+                  SELECT location_id
+                  FROM   locations
+               )
+       )
+AND    e.salary > 10000;
+
+Often better to join and keep filters close to source tables:
+
+SELECT e.employee_id,
+       e.first_name,
+       e.salary
+FROM   employees   e
+       JOIN departments d ON e.department_id = d.department_id
+       JOIN locations  l ON d.location_id    = l.location_id
+WHERE  e.salary > 10000;
+
+--Clearer.
+--Lets optimizer choose best join order and index usage.
+
+
+
+
+
+
+--INNER JOIN
+--    Finds matching rows between tables
+--    Fastest join type when proper indexes exist
+--    Best for filtering + joining together
+
+--Performance Implications
+--    Uses nested loop, hash join, or merge join depending on data size.
+--With indexes on join columns:
+--    Very fast
+--Without indexes:
+--    Can lead to full table scans
+
+SELECT e.employee_id, e.first_name, d.department_name
+FROM   employees e
+       INNER JOIN departments d
+               ON e.department_id = d.department_id;
+
+--LEFT OUTER JOIN
+--    “Return all rows from left table, even if no match on the right”
+--Performance Implications
+--    Requires extra work to preserve unmatched rows.
+--Slightly slower than inner join.
+--    On large right tables:
+--    Index on right join column is important
+
+
+SELECT d.department_name, e.employee_id
+FROM   departments d
+       LEFT JOIN employees e
+              ON d.department_id = e.department_id;
+
+--RIGHT OUTER JOIN
+    --    “Return all rows from left table, even if no match on the right”
+--Performance
+--    No performance benefit over LEFT JOIN.
+
+SELECT e.employee_id, d.department_name
+FROM   employees e
+       RIGHT JOIN departments d
+              ON e.department_id = d.department_id;
+
+--FULL OUTER JOIN
+--    Return all rows from both tables, even if they don’t match.
+--Performance Implications
+--    Most expensive join type.
+--    Requires sorting + merging unmatched rows.
+--    Harder to optimize using indexes.
+--    Use only when absolutely required.
+
+SELECT e.employee_id, d.department_name
+FROM   employees e
+       FULL OUTER JOIN departments d
+              ON e.department_id = d.department_id;
+
+
+--CROSS JOIN
+--    Produces Cartesian product.
+--Performance
+--    ❌ Extremely expensive for large tables.
+--    Rarely used except for generating test data.
+
+SELECT e.first_name, d.department_name
+FROM   employees e
+       CROSS JOIN departments d;
+       
+--SELF JOIN
+--    Table joined to itself.
+--Performance
+--    Needs indexes on EMPLOYEES.MANAGER_ID and EMPLOYEES.EMPLOYEE_ID
+--    Without indexes → repeated full scans.
+
+SELECT e.first_name AS employee,
+       m.first_name AS manager
+FROM   employees e
+       LEFT JOIN employees m
+              ON e.manager_id = m.employee_id;
+
+--SEMI JOIN (EXISTS/Subquery)
+--    Oracle performs internally for subqueries using IN / EXISTS.
+--Performance
+--    Very efficient for existence checking.
+--    Avoids duplicates (unlike normal JOIN).
+--    Better than INNER JOIN + DISTINCT for such cases.
+
+
+SELECT d.department_id
+FROM   departments d
+WHERE  EXISTS (
+       SELECT 1
+       FROM   employees e
+       WHERE  e.department_id = d.department_id
+);
+
+--ANTI-JOIN (NOT EXISTS)
+--Performance
+--    Fast if join columns are indexed.
+--    Avoid NOT IN (bad performance + NULL issues).
+
+SELECT d.department_id, d.department_name
+FROM   departments d
+WHERE  NOT EXISTS (
+       SELECT 1
+       FROM   employees e
+       WHERE  e.department_id = d.department_id
+);
+
+
+--What Is an Index in Oracle?
+--    An index in Oracle is a schema object that improves the speed of data retrieval by providing a fast access path to table rows.
+--    Oracle stores indexes separately from the table.
+--Indexes store:
+--    Indexed column value
+--    ROWID of actual row (physical address of the row)
+--    ROWID = Datafile + Block + Row Number
+--    
+--Types of Indexes in Oracle
+--
+--A. B-TREE INDEX (Default Index)
+--Best for:
+--    High-cardinality columns (many distinct values)
+--    =, >, <, BETWEEN queries
+--    ORDER BY / GROUP BY
+--    Joins
+--
+
+CREATE INDEX idx_emp_email ON employees(email);
+
+--BITMAP INDEX (Data Warehouses)
+--
+--Use When:
+--    Low-cardinality columns (few distinct values)
+--    Example: Gender, Status, Location_ID
+--    Read-heavy systems (OLAP)
+--    Do NOT use for: OLTP with high DML → locking problems
+--
+
+CREATE BITMAP INDEX idx_emp_gender ON employees(gender);
+
+--UNIQUE INDEX
+--Automatically created when you define:
+    --PRIMARY KEY
+    --UNIQUE KEY
+    --Or manually:
+
+CREATE UNIQUE INDEX idx_unique_email ON employees(email);
+
+
+--FUNCTION-BASED INDEX
+--    Index on expression:
+
+CREATE INDEX idx_upper_name ON employees(UPPER(first_name));
+
+--Query using:
+
+SELECT * FROM employees
+WHERE UPPER(first_name) = 'STEVEN';
+
+
+--COMPOSITE / CONCATENATED INDEX
+--Index on multiple columns:
+
+CREATE INDEX idx_name_dept 
+ON employees(last_name, department_id);
+
+--REVERSE KEY INDEX
+--    Good for high-insert concurrency (RAC):
+--    Purpose: avoid hot blocks.
+--    Drawback: cannot be used for range scans.
+
+CREATE INDEX idx_emp_rev ON employees(employee_id) REVERSE;
+
+
+What is an Execution Plan?
+
+An Execution Plan shows how Oracle retrieves data for a SQL query.
+It displays:
+--    Access path (Full Table Scan, Index Scan, etc.)
+--    Join methods (Nested Loop, Hash Join, Merge Join)
+--    Cost & cardinality
+--    Order of operations
+
+--Explain plan
+
+--Index Unique Scan
+--    Query uses PRIMARY KEY index automatically.
+
+EXPLAIN PLAN FOR
+SELECT * FROM employees WHERE employee_id = 101;
+
+SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY);
+
+SET AUTOTRACE ON EXPLAIN
+SELECT * FROM employees WHERE employee_id = 101;
+
+
+--Full Table Scan (FTS)
+EXPLAIN PLAN FOR
+SELECT * FROM employees WHERE salary > 50000;
+
+SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY);
+
+
+--Index Range Scan
+--    Index exists on SALARY:
+
+CREATE INDEX idx_emp_sal ON employees(salary);
+
+EXPLAIN PLAN FOR
+SELECT first_name, salary 
+FROM employees
+WHERE salary BETWEEN 10000 AND 20000;
+
+SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY);
+
+
+--Composite Index & Left-Most Rule
+
+
+
+CREATE INDEX idx_lastname_dept 
+ON employees(last_name, department_id);
+
+EXPLAIN PLAN FOR
+SELECT *
+FROM employees
+WHERE last_name = 'Grant'
+AND department_id = 50;
+
+SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY);
+
+
+--Index NOT Used (Function on Column)
+
+EXPLAIN PLAN FOR
+SELECT *
+FROM employees
+WHERE LOWER(last_name) = 'grant';
+
+SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY);
+
+
+CREATE INDEX idx_lower_lastname 
+ON employees(LOWER(last_name));
+
+
+--JOIN Execution Plan (Nested Loops)
+--
+--Foreign key index exists:
+DROP INDEX EMP_DEPARTMENT_IX;
+CREATE INDEX idx_emp_dept ON employees(department_id);
+
+SELECT INDEX_NAME FROM  USER_INDEXES WHERE TABLE_NAME ='EMPLOYEES';
+
+EXPLAIN PLAN FOR 
+SELECT e.first_name, d.department_name
+FROM employees e
+JOIN departments d
+ON e.department_id = d.department_id;
+
+
+SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY);
+
+
+EXPLAIN PLAN FOR
+SELECT *
+FROM employees e
+JOIN departments d
+ON e.department_id = d.department_id;
+
+SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY);
+
+
+--ORDER BY Using Index
+
+
+CREATE INDEX idx_emp_hiredate ON employees(hire_date);
+
+EXPLAIN PLAN FOR
+SELECT first_name, hire_date
+FROM employees
+ORDER BY hire_date;
+
+SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY);
+
+
+--A Materialized View is a database object that stores the actual physical data of a query result.
+--    Faster performance for complex queries
+--    Used for Data Warehousing, Reporting, Aggregations
+--    Stores data on disk (unlike normal views which run the query every time)
+
+--Why Materialized Views?
+--    Complex joins are expensive
+--    Aggregations take time
+--    Remote data access is slow
+--    Reports need fast response
+--Refresh Models    
+--COMPLETE REFRESH
+--    Rebuilds full data
+--    Slow, but simple
+--
+--FAST REFRESH
+--    Refreshes only changed rows using a log
+--    Requires materialized view logs
+--
+--FORCE REFRESH
+--    If FAST possible → uses FAST
+--    Else → uses COMPLETE
+
+CREATE MATERIALIZED VIEW mv_emp_dept
+BUILD IMMEDIATE
+REFRESH COMPLETE
+ON DEMAND
+AS
+SELECT e.employee_id, e.first_name, e.salary, d.department_name
+FROM employees e
+JOIN departments d
+ON e.department_id = d.department_id;
+
+select * from mv_emp_dept;
+
+--Run refresh manually:
+
+EXEC DBMS_MVIEW.REFRESH('MV_EMP_DEPT');
+
+--Refresh Scheduling (Automatic Refresh)
+--    Daily Refresh at 1 AM
+
+CREATE MATERIALIZED VIEW mv_daily
+REFRESH COMPLETE
+START WITH SYSDATE
+NEXT TRUNC(SYSDATE) + 1 + 1/24
+AS
+select
+ d.department_name,max(salary) max_salary, 
+ min(salary) as min_salary,
+ sum(salary) as total_salary
+FROM employees e
+JOIN departments d
+ON e.department_id = d.department_id
+group by d.department_name;
+
+
+CREATE MATERIALIZED VIEW mv_emp_summary
+REFRESH COMPLETE
+START WITH SYSDATE
+NEXT TRUNC(SYSDATE) + 1 + 1/24
+AS
+SELECT department_id, COUNT(*) emp_count, AVG(salary) avg_sal
+FROM employees
+GROUP BY department_id;
+
+
+Query Rewrite (Performance Improvement)
+    When enabled, Oracle automatically redirects complex queries to MV.
+
+CREATE MATERIALIZED VIEW mv_emp
+REFRESH FAST
+ENABLE QUERY REWRITE
+AS
+SELECT department_id, SUM(salary) total_stotal_salary
+FROM employees
+GROUP BY department_id;
+
+
+SELECT SUM(salary)
+FROM employees
+WHERE department_id = 10;
+
+
+-- checking materialized view status
+
+SELECT mview_name, last_refresh_type, last_refresh_date
+FROM user_mviews;
+
+
+--What is Partitioning?
+--Partitioning means splitting a large table or index into smaller, manageable pieces called PARTITIONS, while still appearing as one single table to the application.
+--    Improves performance
+--    Improves manageability
+--    Supports parallel processing
+--    Supports ILM (Information Lifecycle Management)
+--
+--Why Partitioning? (Impact on Performance)
+--    Faster SELECT on partitioned keys
+--    Faster INSERT/DELETE (partition pruning)
+--    Faster maintenance (rebuild index per partition)
+--    Data archiving becomes easier
+--    Easier to load/remove historical data
+--    Parallel queries improve
+--    Reduces I/O & memory usage
+
+
+--Partition Types in Oracle
+--    Oracle supports 4 main partitioning methods + Composite Partitioning:
+--        Range Partitioning
+--        List Partitioning
+--        Hash Partitioning
+--        Interval Partitioning
+--        Composite Partitioning (Range-Hash, Range-List, Range-Interval)
+
+
+--RANGE PARTITIONING
+--    Used when data is based on a continuous range
+--    Example: Dates, salary ranges, invoice number ranges.
+
+CREATE TABLE sales (
+    sale_id        NUMBER,
+    sale_date      DATE,
+    amount         NUMBER
+)
+PARTITION BY RANGE (sale_date) (
+    PARTITION p2024 VALUES LESS THAN (TO_DATE('01-01-2025','DD-MM-YYYY')),
+    PARTITION p2025 VALUES LESS THAN (TO_DATE('01-01-2026','DD-MM-YYYY')) );
+    
+
+--LIST PARTITIONING
+--    Used when data falls into specific groups
+--    Example: Country, Region, Department_ID.
+
+CREATE TABLE emp_list (
+    employee_id NUMBER,
+    department_id NUMBER,
+    salary NUMBER
+)
+PARTITION BY LIST (department_id) (
+    PARTITION p10 VALUES (10),
+    PARTITION p20 VALUES (20),
+    PARTITION pothers VALUES (DEFAULT)
+);
+
+--HASH PARTITIONING
+--    Used to evenly distribute data when ranges/lists don’t make sense.
+
+
+CREATE TABLE customers (
+    cust_id NUMBER,
+    name VARCHAR2(100)
+)
+PARTITION BY HASH (cust_id)
+PARTITIONS 4;
+
+--INTERVAL PARTITIONING (Auto CREATE Partition)
+--    Oracle automatically creates partitions based on interval.
+
+CREATE TABLE sales_interval (
+    sale_id NUMBER,
+    sale_date DATE,
+    amount NUMBER
+)
+PARTITION BY RANGE (sale_date)
+INTERVAL (NUMTOYMINTERVAL(1,'MONTH'))
+(
+    PARTITION p0 VALUES LESS THAN (DATE '2024-01-01')
+);
+
+--Add Partition
+ALTER TABLE sales ADD PARTITION p2026 
+VALUES LESS THAN (DATE '2027-01-01');
+
+
+--SPLIT Partition
+
+ALTER TABLE sales 
+SPLIT PARTITION p2025 AT (DATE '2025-07-01')
+INTO (PARTITION p2025_h1, PARTITION p2025_h2);
+
+--Drop partition
+
+ALTER TABLE sales DROP PARTITION p2020;
+
+
+--What Are Isolation Levels?
+--Isolation level defines how visible uncommitted data from one transaction is to others.
+--oracle isolation levels
+--    READ COMMITTED (Default)
+--    SERIALIZABLE
+--    READ-ONLY Transact
+
+--READ COMMITTED (Default)
+--
+--A query sees only committed data.
+--    Oracle creates a consistent snapshot at the statement level.
+--    Prevents dirty reads.
+
+--SESSION1
+UPDATE employees
+SET salary = salary + 1000
+WHERE employee_id = 100;
+-- Not committed yet
+
+SESSION 2
+SELECT salary FROM employees WHERE employee_id = 100;
+
+
+SERIALIZABLE Mode in Oracle
+--    It makes your transaction behave as if you are the only user in the system, even when many 
+--    users are updating the database at the same time.
+--    Oracle ensures that your transaction sees a consistent snapshot of the data from the moment it begins.
+--    Oracle ensures that your transaction sees a consistent snapshot of the data from the moment it begins.
+
+User A:
+SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+SELECT salary FROM employees WHERE employee_id=101; 
+
+User B:
+UPDATE employees SET salary = 12000 WHERE employee_id=101;
+COMMIT;
+
+User A:
+SELECT salary FROM employees WHERE employee_id=101;
+
+--USER A SEES THE DATA FROM SNAPSHOT
+User A now tries:
+UPDATE employees SET salary=15000 WHERE employee_id=101;
+
+commit;
+
+
+READ-ONLY Transaction (Oracle-Specific)
+    You can only SELECT
+    Guarantees consistent snapshot for entire transaction
+    No DML allowed
+
+--Session 1 (Read-Only Transaction Starts)
+
+SET TRANSACTION READ ONLY;
+SELECT employee_id, first_name, salary
+FROM employees
+WHERE employee_id = 100;
+
+--Session 2 (Another user changes data)
+UPDATE employees
+SET salary = 30000
+WHERE employee_id = 100;
+
+COMMIT;
+
+--Session 1 (Still in READ ONLY mode)
+--Run the same SELECT again
+
+SELECT employee_id, first_name, salary
+FROM employees
+WHERE employee_id = 100;
+
+Simplified Table
+Feature	READ ONLY	SERIALIZABLE
+Can SELECT	✔	        ✔
+Can INSERT	❌	        ✔
+Can UPDATE	❌	        ✔
+Can DELETE	❌	        ✔
+Best for	Reporting	OLTP + batch updates
+
+--A procedure is a reusable PL/SQL program stored inside the database.
+--
+--    Improves performance
+--    Enhances security
+--    Encapsulates business logic
+--    Reduces network traffi
+
+--Procedure with Parameters
+--    IN → default, read-only
+--    OUT → return value to caller
+--    IN OUT → pass & return
+
+
+CREATE OR REPLACE PROCEDURE pr_get_emp_name (
+    p_emp_id IN employees.employee_id%TYPE
+)
+AS
+    v_name VARCHAR2(100);
+BEGIN
+    SELECT first_name || ' ' || last_name
+    INTO v_name
+    FROM employees
+    WHERE employee_id = p_emp_id;
+
+    DBMS_OUTPUT.PUT_LINE('Employee Name: ' || v_name);
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        DBMS_OUTPUT.PUT_LINE('Employee not found');
+END;
+/
+
+
+CREATE OR REPLACE PROCEDURE pr_emp_details (
+    p_emp_id    IN  employees.employee_id%TYPE,
+    p_name      OUT VARCHAR2,
+    p_salary    OUT NUMBER,
+    p_dept      OUT NUMBER
+)
+AS
+BEGIN
+    SELECT first_name || ' ' || last_name,
+           salary,
+           department_id
+    INTO p_name, p_salary, p_dept
+    FROM employees
+    WHERE employee_id = p_emp_id;
+END;
+/
+
+
+DECLARE
+    v_name VARCHAR2(100);
+    v_sal  NUMBER;
+    v_dept NUMBER;
+BEGIN
+    pr_emp_details(101, v_name, v_sal, v_dept);
+    DBMS_OUTPUT.PUT_LINE(v_name || ' | ' || v_sal || ' | ' || v_dept);
+END;
+/
+
+
+CREATE OR REPLACE PROCEDURE pr_update_salary (
+    p_emp_id    IN NUMBER,
+    p_increment IN NUMBER
+)
+AS
+BEGIN
+    UPDATE employees
+    SET salary = salary + p_increment
+    WHERE employee_id = p_emp_id;
+
+    IF SQL%ROWCOUNT = 0 THEN
+        RAISE_APPLICATION_ERROR(-20001, 'Employee ID does not exist');
+    END IF;
+
+    DBMS_OUTPUT.PUT_LINE('Salary updated successfully');
+END;
+/
+
+
+BEGIN
+    pr_update_salary(105, 5000);
+END;
+/
+
+
+CREATE OR REPLACE PROCEDURE pr_bonus (
+    p_emp_id IN NUMBER,
+    p_bonus  IN NUMBER DEFAULT 1000
+)
+AS
+BEGIN
+    UPDATE employees
+    SET salary = salary + p_bonus
+    WHERE employee_id = p_emp_id;
+
+    DBMS_OUTPUT.PUT_LINE('Bonus added: ' || p_bonus);
+END;
+/
+
+CREATE OR REPLACE PROCEDURE pr_show_record (
+    p_emp_id IN NUMBER
+)
+AS
+    v_rec employees%ROWTYPE;
+BEGIN
+    SELECT * INTO v_rec
+    FROM employees
+    WHERE employee_id = p_emp_id;
+
+    DBMS_OUTPUT.PUT_LINE(v_rec.first_name || ' ' || v_rec.last_name || ' | ' || v_rec.salary);
+END;
+/
+
+
+--Function is a stored PL/SQL program that:
+--
+--    Must return a value
+--    Can accept parameters
+--    Can be used inside SELECT, WHERE, ORDER BY, PL/SQL blocks
+--    Usually used for calculations or returning single output
+
+
+CREATE OR REPLACE FUNCTION fn_get_fullname (
+    p_emp_id IN employees.employee_id%TYPE
+)
+RETURN VARCHAR2
+AS
+    v_name VARCHAR2(100);
+BEGIN
+    SELECT first_name || ' ' || last_name
+    INTO v_name
+    FROM employees
+    WHERE employee_id = p_emp_id;
+
+    RETURN v_name;
+END;
+/
+
+
+CREATE OR REPLACE FUNCTION fn_total_salary (
+    p_emp_id IN employees.employee_id%TYPE
+)
+RETURN NUMBER
+AS
+    v_total NUMBER;
+BEGIN
+    SELECT salary + NVL(commission_pct * salary, 0)
+    INTO v_total
+    FROM employees
+    WHERE employee_id = p_emp_id;
+
+    RETURN v_total;
+END;
+/
+
+
+CREATE OR REPLACE FUNCTION fn_emp_record (
+    p_emp_id IN NUMBER
+)
+RETURN employees%ROWTYPE
+AS
+    v_emp employees%ROWTYPE;
+BEGIN
+    SELECT *
+    INTO v_emp
+    FROM employees
+    WHERE employee_id = p_emp_id;
+
+    RETURN v_emp;
+END;
+/
+
+
+CREATE OR REPLACE FUNCTION fn_get_salary (
+    p_emp_id IN NUMBER
+)
+RETURN NUMBER
+AS
+    v_sal NUMBER;
+BEGIN
+    SELECT salary
+    INTO v_sal
+    FROM employees
+    WHERE employee_id = p_emp_id;
+
+    RETURN v_sal;
+
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        RETURN -1;   -- or raise custom error
+END;
+/
+
+
+CREATE OR REPLACE FUNCTION fn_annual_salary (
+    p_emp_id IN NUMBER
+)
+RETURN NUMBER
+AS
+    v_yearly NUMBER;
+BEGIN
+    SELECT (salary * 12) + NVL((commission_pct * salary * 12), 0)
+    INTO v_yearly
+    FROM employees
+    WHERE employee_id = p_emp_id;
+
+    RETURN v_yearly;
+END;
+/
