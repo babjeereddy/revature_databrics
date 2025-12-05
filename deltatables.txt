@@ -1,0 +1,35 @@
+A Delta Table is a modern storage format built on top of Apache Parquet that brings ACID transactions, Time Travel, Schema Enforcement, and fast upserts/merges to data lakes.
+It is part of Delta Lake, widely used with Apache Spark.
+Delta Table = Parquet + Transaction Log + ACID + Features
+
+A Delta table adds a transaction log folder (_delta_log) inside the data directory to track:
+
+	Inserts
+	Updates
+	Deletes
+	Merges
+	Schema changes
+	Versions
+	Timestamps
+
+This makes your data lake behave like a database.
+
+Key Features of Delta Tables
+	1. ACID Transactions
+	
+Atomicity, Consistency, Isolation, Durability
+→ Multiple users/workflows can safely read/write at the same time.
+
+Time Travel
+	You can query older versions of data.
+
+Schema Enforcement
+	Prevents bad or incompatible data from entering your table.
+	 Upsert / Merge
+
+Fast Reads & Writes
+	It uses Parquet + indexing + caching.
+
+Streaming Support
+	Can be used for batch + streaming on the same table.
+
