@@ -1,0 +1,42 @@
+What is Structured Streaming?
+Structured Streaming is Apache Spark’s scalable and fault-tolerant stream processing engine built on Spark SQL.
+
+	Treats streaming data as an unbounded table that is continuously appended with new rows.
+	Enables you to write streaming jobs using the same DataFrame/Dataset API used for batch processing.
+
+Key Concepts
+	Unbounded Table
+		Incoming data = continuous new rows.
+		Queries run incrementally as new data arrives.
+
+Trigger
+	Controls when the next micro-batch should run
+	(e.g., trigger(processingTime="10 seconds")).
+
+Checkpointing
+	Used to store metadata, offsets, and progress to ensure fault tolerance and 	exactly-once guarantees.
+
+Input Sources
+	File Sources (CSV, JSON, Parquet)
+	Socket Source (testing)
+	Kafka (real-time)
+	Rate Source (built-in test generator)
+	Delta Tables
+
+4. Output Modes
+Append
+	Writes only newly added rows
+	(works when aggregations do not update previous values).
+Update
+	Writes only rows whose values changed compared to the previous micro-batch.
+
+Complete
+	Rewrites the entire result table (useful for aggregations like counts).
+
+Sinks (Output Targets)
+	Console
+	File sinks (CSV, JSON, Parquet)
+	Kafka
+	Memory sink (for debugging)
+	Delta Lake sink
+
