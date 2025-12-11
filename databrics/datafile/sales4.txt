@@ -1,0 +1,3 @@
+sale_id,product,quantity,price,sale_timestamp
+108,Monitor,3,9500,2025-01-10 11:00:00
+109,Charger,5,2200,2025-01-10 11:10:00

@@ -1,0 +1,4 @@
+sale_id,product,quantity,price,sale_timestamp
+101,Laptop,1,55000,2025-01-10 10:00:00
+102,Mouse,2,800,2025-01-10 10:05:00
+103,Keyboard,1,1500,2025-01-10 10:15:00
